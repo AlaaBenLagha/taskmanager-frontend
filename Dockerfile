@@ -25,7 +25,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Copy the built Angular application
-COPY --from=build /app/dist/your-app-name /usr/share/nginx/html
+COPY --from=build /app/dist/taskmanager-frontend /usr/share/nginx/html
 
 # Set appropriate permissions
 RUN chown -R nginx:nginx /usr/share/nginx/html && \
