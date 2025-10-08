@@ -2,8 +2,17 @@
 FROM node:lts-alpine AS build
 
 WORKDIR /app
-COPY . .
+
+# Copy package.json and package-lock.json first to leverage Docker cache
+COPY package*.json ./
+
+# Install dependencies
 RUN npm install
+
+# Copy the rest of the application files
+COPY . .
+
+# Build the Angular application
 RUN npm run build --prod
 
 # Stage 2: Serve the application using NGINX
