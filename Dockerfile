@@ -1,9 +1,16 @@
-FROM nginx:alpine 
-# Remove the default configuration and replace with our own 
-COPY default.conf /etc/nginx/conf.d/default.conf 
-# Copy static files into nginx’s html directory 
-COPY index.html /usr/share/nginx/html/index.html 
-COPY styles.css /usr/share/nginx/html/styles.css 
-COPY script.js /usr/share/nginx/html/script.js 
-EXPOSE 80 
+FROM nginxinc/nginx-unprivileged
+
+# Create and adjust permissions
+RUN mkdir -p /var/cache/nginx/client_temp \
+    && mkdir -p /var/run/nginx \
+    && chown -R nginx:nginx /var/cache/nginx /var/run/nginx /var/log/nginx
+
+# Copy config
+COPY default.conf /etc/nginx/conf.d/default.conf
+COPY index.html /usr/share/nginx/html/
+COPY styles.css /usr/share/nginx/html/
+COPY script.js /usr/share/nginx/html/
+
+# Expose port etc.
+EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
