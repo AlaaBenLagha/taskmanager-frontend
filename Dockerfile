@@ -17,5 +17,5 @@ COPY script.js /usr/share/nginx/html/
 # Then switch back to the unprivileged (nginx) user
 USER nginx
 
-EXPOSE 8080
+EXPOSE 8081
 CMD ["nginx", "-g", "daemon off;"]
