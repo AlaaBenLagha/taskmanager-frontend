@@ -1,18 +1,28 @@
-##
-# Dockerfile for the Angular frontend.  This image simply serves
-# static HTML, CSS and JavaScript using nginx.  A custom nginx
-# configuration proxies API calls to the backend service in the
-# cluster (see k8s manifests).
+# Stage 1: Build the Angular application
+FROM node:lts-alpine AS build
 
+WORKDIR /app
+COPY . .
+RUN npm install
+RUN npm run build --prod
+
+# Stage 2: Serve the application using NGINX
 FROM nginx:alpine
 
-# Remove the default configuration and replace with our own
-COPY default.conf /etc/nginx/conf.d/default.conf
+# Remove default NGINX configuration
+RUN rm /etc/nginx/conf.d/default.conf
 
-# Copy static files into nginx’s html directory
-COPY index.html /usr/share/nginx/html/index.html
-COPY styles.css /usr/share/nginx/html/styles.css
-COPY script.js /usr/share/nginx/html/script.js
+# Copy custom NGINX configuration
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+# Copy the built Angular application
+COPY --from=build /app/dist/your-app-name /usr/share/nginx/html
+
+# Set appropriate permissions
+RUN chown -R nginx:nginx /usr/share/nginx/html && \
+    chmod -R 755 /usr/share/nginx/html
+
+USER nginx
+
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]
